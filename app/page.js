@@ -1,69 +1,139 @@
-import Image from "next/image";
+'use client';
+
+import { useState } from 'react';
+import InlineMath from 'react-katex';
+import { spmModernMathSyllabus } from '@/lib/syllabus';
 
 export default function Home() {
+  const [form, setForm] = useState('Form4');
+  const [topic, setTopic] = useState(spmModernMathSyllabus.Form4[0]);
+  const [paperType, setPaperType] = useState('Paper 1');
+  const [difficulty, setDifficulty] = useState('Medium');
+  
+  const [loading, setLoading] = useState(false);
+  const [questionData, setQuestionData] = useState(null);
+
+  const handleFormChange = (e) => {
+    const selectedForm = e.target.value;
+    setForm(selectedForm);
+    setTopic(spmModernMathSyllabus[selectedForm][0]);
+  };
+
+  const handleGenerate = async () => {
+    setLoading(true);
+    setQuestionData(null);
+    try {
+      const res = await fetch('/api/generate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ form, topic, paperType, difficulty })
+      });
+      const data = await res.json();
+      setQuestionData(data);
+    } catch (err) {
+      alert("Failed to fetch exercise.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert h-5 w-[100px]"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the{" "}
-            <code className="rounded bg-black/[.06] px-1.5 py-0.5 font-mono text-[0.9em] dark:bg-white/[.08]">
-              page.js
-            </code>{" "}
-            file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <main className="max-w-3xl mx-auto p-6 my-10">
+      <div className="bg-white p-6 rounded-xl shadow-md border border-slate-200">
+        <h1 className="text-2xl font-bold text-slate-800 mb-6 text-center">
+          🇲🇾 SPM Modern Mathematics Exercise Generator
+        </h1>
+
+        {/* Controls Form */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+          <div>
+            <label className="block text-sm font-medium mb-1">Form Level</label>
+            <select value={form} onChange={handleFormChange} className="w-full p-2 border rounded-md">
+              <option value="Form4">Form 4</option>
+              <option value="Form5">Form 5</option>
+            </select>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium mb-1">Paper Type</label>
+            <select value={paperType} onChange={(e) => setPaperType(e.target.value)} className="w-full p-2 border rounded-md">
+              <option value="Paper 1">Paper 1 (MCQ)</option>
+              <option value="Paper 2">Paper 2 (Structured)</option>
+            </select>
+          </div>
+
+          <div className="md:col-span-2">
+            <label className="block text-sm font-medium mb-1">Topic</label>
+            <select value={topic} onChange={(e) => setTopic(e.target.value)} className="w-full p-2 border rounded-md">
+              {spmModernMathSyllabus[form].map((t, idx) => (
+                <option key={idx} value={t}>{t}</option>
+              ))}
+            </select>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium mb-1">Difficulty Level</label>
+            <select value={difficulty} onChange={(e) => setDifficulty(e.target.value)} className="w-full p-2 border rounded-md">
+              <option value="Easy">Easy</option>
+              <option value="Medium">Medium (Exam Standard)</option>
+              <option value="Hard (HOTS/KBAT)">Hard (HOTS / KBAT)</option>
+            </select>
+          </div>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert h-[14px] w-4"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+
+        <button 
+          onClick={handleGenerate} 
+          disabled={loading}
+          className="w-full bg-blue-600 text-white font-semibold py-3 rounded-lg hover:bg-blue-700 transition disabled:opacity-50"
+        >
+          {loading ? 'Generating Question...' : 'Generate New Question'}
+        </button>
+      </div>
+
+      {/* Output Display */}
+      {questionData && (
+        <div className="mt-8 bg-white p-6 rounded-xl shadow-md border border-slate-200">
+          <span className="text-xs bg-blue-100 text-blue-700 font-bold px-2.5 py-1 rounded">
+            {questionData.type}
+          </span>
+          
+          <div className="my-4 text-lg text-slate-800 leading-relaxed">
+            <InlineMath math={questionData.questionText} />
+          </div>
+
+          {/* Paper 1 Options */}
+          {questionData.options && (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 my-4">
+              {questionData.options.map((option, idx) => (
+                <div key={idx} className="p-3 border rounded-lg hover:bg-slate-50 cursor-pointer">
+                  <InlineMath math={option} />
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* Solution & Explanation Dropdown */}
+          <details className="mt-6 border-t pt-4">
+            <summary className="cursor-pointer text-blue-600 font-medium">View Solution & Marking Scheme</summary>
+            <div className="mt-3 p-4 bg-slate-50 rounded-lg text-sm text-slate-700 space-y-2">
+              <p><strong>Correct Answer:</strong> <InlineMath math={questionData.correctAnswer} /></p>
+              
+              {questionData.markingScheme && (
+                <div>
+                  <strong>Marking Scheme:</strong>
+                  <ul className="list-disc pl-5 mt-1 space-y-1">
+                    {questionData.markingScheme.map((step, i) => (
+                      <li key={i}><InlineMath math={step} /></li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+              <p className="pt-2"><strong>Explanation:</strong> {questionData.explanation}</p>
+            </div>
+          </details>
         </div>
-      </main>
-    </div>
+      )}
+    </main>
   );
 }
