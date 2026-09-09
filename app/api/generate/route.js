@@ -1,16 +1,15 @@
-import { NextResponse } from 'next/server';
-import OpenAI from 'openai';
+import { GoogleGenAI } from "@google/genai";
+import { NextResponse } from "next/server";
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
+const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
 export async function POST(request) {
   try {
     const { form, topic, paperType, difficulty } = await request.json();
 
     const prompt = `
-      Generate 1 SPM Modern Mathematics (Malaysian KSSM standard) question for:
+      You are an SPM Modern Mathematics exam teacher (Malaysian KSSM standard).
+      Generate 1 question based on:
       - Form: ${form}
       - Topic: ${topic}
       - Paper Type: ${paperType} (Paper 1 = Multiple Choice, Paper 2 = Structured)
@@ -36,19 +35,18 @@ export async function POST(request) {
       }
     `;
 
-    const response = await openai.chat.completions.create({
-      model: 'gpt-4o-mini',
-      messages: [
-        { role: 'system', content: 'You are an SPM Modern Mathematics exam teacher. Output valid JSON only.' },
-        { role: 'user', content: prompt }
-      ],
-      response_format: { type: 'json_object' }
+    const response = await ai.models.generateContent({
+      model: "gemini-2.5-flash",
+      contents: prompt,
+      config: {
+        responseMimeType: "application/json",
+      },
     });
 
-    const data = JSON.parse(response.choices[0].message.content);
+    const data = JSON.parse(response.text);
     return NextResponse.json(data);
   } catch (error) {
     console.error("API Error:", error);
-    return NextResponse.json({ error: 'Failed to generate question.' }, { status: 500 });
+    return NextResponse.json({ error: error.message || 'Failed to generate question.' }, { status: 500 });
   }
 }
