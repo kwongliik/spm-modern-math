@@ -35,7 +35,7 @@ export async function POST(request) {
       }
     `;
 
-    // Updated to currently supported active model string
+    // Updated to the active gemini-3.6-flash model
     const response = await ai.models.generateContent({
       model: "gemini-3.6-flash", 
       contents: prompt,
