@@ -1,7 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import InlineMath from 'react-katex';
+import { InlineMath } from 'react-katex';
+import 'katex/dist/katex.min.css';
 import { spmModernMathSyllabus } from '@/lib/syllabus';
 
 export default function Home() {
