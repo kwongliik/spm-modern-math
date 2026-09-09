@@ -35,8 +35,9 @@ export async function POST(request) {
       }
     `;
 
+    // Updated to currently supported active model string
     const response = await ai.models.generateContent({
-      model: "gemini-2.0-flash",
+      model: "gemini-3.6-flash", 
       contents: prompt,
       config: {
         responseMimeType: "application/json",
