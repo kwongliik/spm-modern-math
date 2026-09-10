@@ -141,7 +141,8 @@ export default function Home() {
                 </div>
               )}
 
-              <p className="pt-2"><strong>Explanation:</strong> {questionData.explanation}</p>
+              <p className="pt-2"><strong>Explanation:</strong></p>
+              <MathText>{questionData.explanation}</MathText>
             </div>
           </details>
         </div>
