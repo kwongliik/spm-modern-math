@@ -8,10 +8,17 @@ import rehypeKatex from 'rehype-katex';
 import 'katex/dist/katex.min.css';
 import { spmModernMathSyllabus } from '@/lib/syllabus';
 
+function normalizeMath(text) {
+  if (!text) return '';
+  return text
+    .replace(/\\\[(.*?)\\\]/gs, (_, expr) => `$$${expr}$$`)  // \[ ... \]  ->  $$ ... $$
+    .replace(/\\\((.*?)\\\)/gs, (_, expr) => `$${expr}$`);   // \( ... \)  ->  $ ... $
+}
+
 function MathText({ children }) {
   return (
     <ReactMarkdown remarkPlugins={[remarkMath, remarkGfm]} rehypePlugins={[rehypeKatex]}>
-      {children}
+      {normalizeMath(children)}
     </ReactMarkdown>
   );
 }
