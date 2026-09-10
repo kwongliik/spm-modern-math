@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkMath from 'remark-math';
 import remarkGfm from 'remark-gfm';
@@ -113,11 +114,15 @@ export default function Home() {
           </div>
 
           {/* Paper 1 Options */}
-          {questionData.options.map((option, idx) => (
-            <div key={idx} className="p-3 border rounded-lg hover:bg-slate-50 cursor-pointer">
-              <MathText>{option}</MathText>
+          {questionData.options && (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 my-4">
+              {questionData.options.map((option, idx) => (
+                <div key={idx} className="p-3 border rounded-lg hover:bg-slate-50 cursor-pointer">
+                  <MathText>{option}</MathText>
+                </div>
+              ))}
             </div>
-          ))}
+          )}
 
           {/* Solution & Explanation Dropdown */}
           <details className="mt-6 border-t pt-4">
