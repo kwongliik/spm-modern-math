@@ -1,9 +1,19 @@
 'use client';
 
-import { useState } from 'react';
-import { InlineMath } from 'react-katex';
+import ReactMarkdown from 'react-markdown';
+import remarkMath from 'remark-math';
+import remarkGfm from 'remark-gfm';
+import rehypeKatex from 'rehype-katex';
 import 'katex/dist/katex.min.css';
 import { spmModernMathSyllabus } from '@/lib/syllabus';
+
+function MathText({ children }) {
+  return (
+    <ReactMarkdown remarkPlugins={[remarkMath, remarkGfm]} rehypePlugins={[rehypeKatex]}>
+      {children}
+    </ReactMarkdown>
+  );
+}
 
 export default function Home() {
   const [form, setForm] = useState('Form4');
@@ -99,32 +109,28 @@ export default function Home() {
           </span>
           
           <div className="my-4 text-lg text-slate-800 leading-relaxed">
-            <InlineMath math={questionData.questionText} />
+            <MathText>{questionData.questionText}</MathText>
           </div>
 
           {/* Paper 1 Options */}
-          {questionData.options && (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 my-4">
-              {questionData.options.map((option, idx) => (
-                <div key={idx} className="p-3 border rounded-lg hover:bg-slate-50 cursor-pointer">
-                  <InlineMath math={option} />
-                </div>
-              ))}
+          {questionData.options.map((option, idx) => (
+            <div key={idx} className="p-3 border rounded-lg hover:bg-slate-50 cursor-pointer">
+              <MathText>{option}</MathText>
             </div>
-          )}
+          ))}
 
           {/* Solution & Explanation Dropdown */}
           <details className="mt-6 border-t pt-4">
             <summary className="cursor-pointer text-blue-600 font-medium">View Solution & Marking Scheme</summary>
             <div className="mt-3 p-4 bg-slate-50 rounded-lg text-sm text-slate-700 space-y-2">
-              <p><strong>Correct Answer:</strong> <InlineMath math={questionData.correctAnswer} /></p>
+              <p><strong>Correct Answer:</strong> <MathText>{questionData.correctAnswer}</MathText></p>
               
               {questionData.markingScheme && (
                 <div>
                   <strong>Marking Scheme:</strong>
                   <ul className="list-disc pl-5 mt-1 space-y-1">
                     {questionData.markingScheme.map((step, i) => (
-                      <li key={i}><InlineMath math={step} /></li>
+                      <li key={i}><MathText>{step}</MathText></li>
                     ))}
                   </ul>
                 </div>
